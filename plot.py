@@ -22,6 +22,6 @@ pl.view_isometric()
 pl.set_position([0.5, 0.5, 1])
 pl.set_viewup([0, 1, 0])
 if sys.version_info[0] > 2:
-    pl.camera.zoom('tight')
+    pl.camera.zoom("tight")
 pl.save_graphic(f"{file}.svg")
 pl.show(screenshot=f"{file}.png")

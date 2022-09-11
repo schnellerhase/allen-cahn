@@ -3,8 +3,8 @@ from fenics import *
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
-parser.add_argument("initial", type=str, choices=['bump', 'dumbel'])
-parser.add_argument("--eps", default=.1, type=float)
+parser.add_argument("initial", type=str, choices=["bump", "dumbel"])
+parser.add_argument("--eps", default=0.1, type=float)
 parser.add_argument("--dimension", default=2, choices=[1, 2], type=int)
 
 args = parser.parse_args()
@@ -16,13 +16,14 @@ dt = 5.0e-5
 t = 0.00
 T = 0.05
 
+
 def distance(a, b):
-    return sqrt(sum(((a[i] - b[i])**2) for i in range(dimension)))
+    return sqrt(sum(((a[i] - b[i]) ** 2) for i in range(dimension)))
 
 
 class LinearBump(UserExpression):
     def eval(self, values, x):
-        d = distance(x, (.5, .5))
+        d = distance(x, (0.5, 0.5))
 
         if d + DOLFIN_EPS < 0.25:
             values[0] = 1
@@ -30,6 +31,7 @@ class LinearBump(UserExpression):
             values[0] = -2 / eps * (d - 0.25 - eps) - 1
         else:
             values[0] = -1
+
 
 # TODO: fix 1D case
 class Dumbel(UserExpression):
