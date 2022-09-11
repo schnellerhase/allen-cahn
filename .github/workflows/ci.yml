@@ -11,23 +11,35 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: quay.io/fenicsproject/stable
-    
+
     steps:
     - name: Install Dependencies
       run: |
         sudo apt update
         sudo apt install libgl1-mesa-glx xvfb -y
+        pip3 install --upgrade pip
         pip3 install pyvista
     - uses: actions/checkout@v3
     - name: Run
       run: |
-        python3 allen_cahn_2d_dumbel.py --eps 0.01
-    - name: Plot
-      run: |
-        python3 plot.py allen_cahn_2d_dumbel_eps_0.01000000.vtu
+        bash run.sh
     - name: Add Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: dumbel_plot
-        path: plot.png
+        name: plots
+        path: |
+          data/dumbel/eps_0.01000000.vtu.png
+          data/dumbel/eps_0.01000015.vtu.png
+          data/dumbel/eps_0.01000101.vtu.png
 
+          data/dumbel/eps_0.2000000.vtu.png
+          data/dumbel/eps_0.2000015.vtu.png
+          data/dumbel/eps_0.2000101.vtu.png
+
+          data/bump/eps_0.01000000.vtu.png
+          data/bump/eps_0.01000015.vtu.png
+          data/bump/eps_0.01000101.vtu.png
+
+          data/bump/eps_0.2000000.vtu.png
+          data/bump/eps_0.2000015.vtu.png
+          data/bump/eps_0.2000101.vtu.png
