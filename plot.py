@@ -1,6 +1,7 @@
 import pyvista as pv
 import argparse
 import sys
+
 # must change font!
 
 pv.start_xvfb(wait=0.1)
@@ -21,7 +22,7 @@ mesh = pl.add_mesh(
 pl.view_isometric()
 pl.set_position([0.5, 0.5, 1])
 pl.set_viewup([0, 1, 0])
-if sys.version_info[0] > 2:
+if sys.version_info[0] > 2 and sys.version_info[1] >= 7:
     pl.camera.zoom("tight")
 pl.save_graphic(f"{file}.svg")
 pl.show(screenshot=f"{file}.png")
