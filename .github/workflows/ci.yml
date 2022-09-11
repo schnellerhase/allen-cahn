@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: quay.io/fenicsproject/stable
-    
+
     steps:
     - name: Install Dependencies
       run: |
@@ -62,4 +62,3 @@ jobs:
           data/bump/eps_0.2000000.vtu.png
           data/bump/eps_0.2000015.vtu.png
           data/bump/eps_0.2000101.vtu.png
-          
