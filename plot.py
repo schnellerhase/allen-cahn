@@ -1,6 +1,6 @@
 import pyvista as pv
 import argparse
-
+import sys
 # must change font!
 
 pv.start_xvfb(wait=0.1)
