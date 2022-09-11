@@ -3,35 +3,26 @@ from fenics import *
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
-parser.add_argument("initial", type=str)
-parser.add_argument("--eps", required=True, type=float)
-# eps=.1 interesting
+parser.add_argument("initial", type=str, choices=['bump', 'dumbel'])
+parser.add_argument("--eps", default=.1, type=float)
+parser.add_argument("--dimension", default=2, choices=[1, 2], type=int)
+
 args = parser.parse_args()
 eps = args.eps
 initial_data = args.initial
+dimension = args.dimension
 
 dt = 5.0e-5
 t = 0.00
 T = 0.05
 
+def distance(a, b):
+    return sqrt(sum(((a[i] - b[i])**2) for i in range(dimension)))
+
 
 class LinearBump(UserExpression):
     def eval(self, values, x):
-        if x[0] < 0.25 + DOLFIN_EPS:
-            values[0] = -1
-        elif x[0] < 0.25 + eps + DOLFIN_EPS:
-            values[0] = 2 / eps * (x[0] - 0.25) - 1
-        elif x[0] < 0.75 - eps + DOLFIN_EPS:
-            values[0] = 1
-        elif x[0] < 0.75 + DOLFIN_EPS:
-            values[0] = 2 / eps * (0.75 - eps - x[0]) + 1
-        else:
-            values[0] = -1
-
-
-class LinearBump2D(UserExpression):
-    def eval(self, values, x):
-        d = sqrt((x[0] - 0.5) ** 2 + (x[1] - 0.5) ** 2)
+        d = distance(x, (.5, .5))
 
         if d + DOLFIN_EPS < 0.25:
             values[0] = 1
@@ -40,12 +31,8 @@ class LinearBump2D(UserExpression):
         else:
             values[0] = -1
 
-
-def distance(a, b):
-    return sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
-
-
-class Dumbel2D(UserExpression):
+# TODO: fix 1D case
+class Dumbel(UserExpression):
     def eval(self, values, x):
         r = 3 / 16
         a = 3 / 8
@@ -70,14 +57,15 @@ class Dumbel2D(UserExpression):
 
 class PeriodicBoundary(SubDomain):
     def inside(self, x, on_boundary):
-        return bool((near(x[0], 0) or near(x[1], 0)) and on_boundary)
+        is_near = (near(x[i], 0) for i in range(dimension))
+        return bool(any(is_near) and on_boundary)
 
     def map(self, x, y):
-        y[0] = x[0] + (near(x[0], 1)) * (-1)
-        y[1] = x[1] + (near(x[1], 1)) * (-1)
+        for i in range(dimension):
+            y[i] = x[i] + (near(x[i], 1)) * (-1)
 
 
-mesh = UnitSquareMesh(100, 100)
+mesh = UnitIntervalMesh(100) if dimension == 1 else UnitSquareMesh(100, 100)
 
 pbc = PeriodicBoundary()
 V = FunctionSpace(mesh, "CG", 1, constrained_domain=pbc)
@@ -85,13 +73,7 @@ V = FunctionSpace(mesh, "CG", 1, constrained_domain=pbc)
 u, v = Function(V), TestFunction(V)
 u.rename("u", "")
 
-if initial_data == "dumbel":
-    u_init = Dumbel2D()
-elif initial_data == "bump":
-    u_init = LinearBump2D()
-else:
-    raise Exception()
-
+u_init = LinearBump() if initial_data == "bump" else Dumbel()
 u_init = interpolate(u_init, V)
 
 u_pre = Function(V)
