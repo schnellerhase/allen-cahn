@@ -3,10 +3,12 @@ from fenics import *
 
 import argparse
 parser = argparse.ArgumentParser()
+parser.add_argument('initial', type=str)
 parser.add_argument('--eps', required=True, type=float)
 # eps=.1 interesting
 args = parser.parse_args()
 eps = args.eps
+initial_data = args.initial
 
 dt = 5.0e-5
 t = 0.00
@@ -22,6 +24,17 @@ class LinearBump(UserExpression):
             values[0] = 1
         elif x[0] < .75 + DOLFIN_EPS:
             values[0] = 2/eps *(.75 - eps - x[0]) + 1
+        else:
+            values[0] = -1
+
+class LinearBump2D(UserExpression):
+    def eval(self, values, x):
+        d = sqrt((x[0] - .5)**2 + (x[1] - .5)**2)
+
+        if d + DOLFIN_EPS < .25:
+            values[0] = 1
+        elif d + DOLFIN_EPS < .25 + eps:
+            values[0] = - 2/eps * (d - .25 - eps) - 1
         else:
             values[0] = -1
 
@@ -67,7 +80,13 @@ V = FunctionSpace(mesh, 'CG', 1, constrained_domain=pbc)
 u, v = Function(V), TestFunction(V)
 u.rename('u', '')
 
-u_init = Dumbel2D()
+if initial_data == 'dumbel':
+    u_init = Dumbel2D()
+elif initial_data == 'bump':
+    u_init = LinearBump2D()
+else:
+    raise Exception()
+
 u_init = interpolate(u_init, V)
 
 u_pre = Function(V)
@@ -86,7 +105,7 @@ F = + 1/dt * u * v * dx \
     + 1/eps**2 * W_prime(u) * v * dx
 
 i = 0
-file = File(f"allen_cahn_2d_dumbel_eps_{eps}.pvd")
+file = File(f"data/{initial_data}/eps_{eps}.pvd")
 file << (u_pre, i)
 
 while t < T:
