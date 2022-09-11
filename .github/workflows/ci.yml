@@ -21,13 +21,45 @@ jobs:
     - uses: actions/checkout@v3
     - name: Run
       run: |
-        python3 allen_cahn_2d_dumbel.py --eps 0.01
+        python3 allen_cahn.py bump --eps 0.01
+        python3 allen_cahn.py bump --eps 0.2
+        python3 allen_cahn.py dumbel --eps 0.01
+        python3 allen_cahn.py dumbel --eps 0.2
     - name: Plot
       run: |
-        python3 plot.py allen_cahn_2d_dumbel_eps_0.01000000.vtu
+        python3 plot.py data/dumbel/eps_0.01000000.vtu
+        python3 plot.py data/dumbel/eps_0.01000015.vtu
+        python3 plot.py data/dumbel/eps_0.01000101.vtu
+
+        python3 plot.py data/dumbel/eps_0.2000000.vtu
+        python3 plot.py data/dumbel/eps_0.2000015.vtu
+        python3 plot.py data/dumbel/eps_0.2000101.vtu
+
+        python3 plot.py data/bump/eps_0.01000000.vtu
+        python3 plot.py data/bump/eps_0.01000015.vtu
+        python3 plot.py data/bump/eps_0.01000101.vtu
+
+        python3 plot.py data/bump/eps_0.2000000.vtu
+        python3 plot.py data/bump/eps_0.2000015.vtu
+        python3 plot.py data/bump/eps_0.2000101.vtu
     - name: Add Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: dumbel_plot
-        path: plot.png
+        name: plots
+        path: |
+          data/dumbel/eps_0.01000000.vtu.png
+          data/dumbel/eps_0.01000015.vtu.png
+          data/dumbel/eps_0.01000101.vtu.png
 
+          data/dumbel/eps_0.2000000.vtu.png
+          data/dumbel/eps_0.2000015.vtu.png
+          data/dumbel/eps_0.2000101.vtu.png
+
+          data/bump/eps_0.01000000.vtu.png
+          data/bump/eps_0.01000015.vtu.png
+          data/bump/eps_0.01000101.vtu.png
+
+          data/bump/eps_0.2000000.vtu.png
+          data/bump/eps_0.2000015.vtu.png
+          data/bump/eps_0.2000101.vtu.png
+          
