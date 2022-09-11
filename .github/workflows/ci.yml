@@ -17,7 +17,8 @@ jobs:
       run: |
         sudo apt update
         sudo apt install libgl1-mesa-glx xvfb -y
-        pip3 install pyvista==0.36.1
+        pip install --upgrade pip
+        pip install pyvista==0.36.1
     - uses: actions/checkout@v3
     - name: Run
       run: |
