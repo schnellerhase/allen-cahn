@@ -25,6 +25,7 @@ mesh = pl.add_mesh(mesh, scalar_bar_args=dict(width=.9, position_x=(1-.9)/2), cl
 pl.view_isometric()
 pl.set_position([.5, .5, 1])
 pl.set_viewup([0, 1, 0])
-pl.camera.zoom('tight')
+# pl.camera.zoom('tight')
+pl.camera.tight()
 pl.save_graphic(f'{file}.svg')
 pl.show(screenshot=f'{file}.png')
